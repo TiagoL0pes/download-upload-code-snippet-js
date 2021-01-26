@@ -1,0 +1,185 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset=utf-8>
+    <title>Download/Upload</title>
+    <style type="text/css">
+        * {
+            box-sizing: border-box;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+        }
+
+        body {
+            background-color: #111827;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .title {
+            color: #F9FAFB;
+            text-align: center;
+        }
+
+        .image-container {
+            background-color: #D1D5DB;
+            margin-bottom: 20px;
+            height: 30em;
+            width: 30em;
+            border: solid 1px #000;
+        }
+
+        .image {
+            display: none;
+            height: 100%;
+            width: 100%
+        }
+
+        .actions {
+            width: 30em;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .upload,
+        .download {
+            border-radius: 6px;
+            display: inline-block;
+            cursor: pointer;
+            font-size: 2em;
+            font-weight: bold;
+            padding: 6px 24px;
+            text-decoration: none;
+            width: 100%;
+            text-align: center;
+        }
+
+        .upload {
+            box-shadow: inset 0px 1px 0px 0px #f7c5c0;
+            background: linear-gradient(to bottom, #F87171 5%, #EF4444 100%);
+            background-color: #F87171;
+            border: 1px solid #DC2626;
+            color: #ffffff;
+            text-shadow: 0px 1px 0px #B91C1C;
+        }
+
+        .upload:hover {
+            background: linear-gradient(to bottom, #EF4444 5%, #F87171 100%);
+            background-color: #EF4444;
+        }
+
+        .download {
+            box-shadow: inset 0px 1px 0px 0px #bee2f9;
+            background: linear-gradient(to bottom, #60A5FA 5%, #2563EB 100%);
+            background-color: #60A5FA;
+            border: 1px solid #3B82F6;
+            color: #ffffff;
+            text-shadow: 0px 1px 0px #7cacde;
+        }
+
+        .download:hover {
+            background: linear-gradient(to bottom, #2563EB 5%, #60A5FA 100%);
+            background-color: #2563EB;
+        }
+
+        .upload:active,
+        .download:active {
+            position: relative;
+            top: 1px;
+        }
+
+        .stage {
+            animation: animateBg 4s linear infinite;
+            background: linear-gradient(45deg, #EF4444, #F59E0B, #10B981, #3B82F6, #8B5CF6, #EC4899);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            background-size: 100% 1100%;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        @keyframes animateBg {
+            0% {
+                background-position: 0% 0%;
+            }
+
+            100% {
+                background-position: 0% 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="title">Download and Upload Images - Code Snippet using <span class="stage">PURE JS</span></h1>
+        <div class="image-container">
+            <img src="#" alt="" class="image">
+        </div>
+        <div class="actions">
+            <label class="upload" onclick="openDialog()">Upload</label>
+            <label class="download" onclick="download()">Download</label>
+        </div>
+        <input hidden type="file" class="file" onchange="showPreview()"></input>
+    </div>
+</body>
+<script type="text/javascript">
+    const image = document.querySelector('.image');
+    const inputFile = document.querySelector('.file');
+    let file;
+
+    function openDialog() {
+        inputFile.click();
+    }
+
+    function showPreview() {
+        if (inputFile.files?.length > 0) {
+            file = inputFile.files[0];
+
+            if (validateFileType(file.type)) {
+                const reader = new FileReader();
+                reader.onload = event => {
+                    image.src = event.target.result;
+                    image.alt = file.name;
+                    image.style.display = 'block';
+                }
+                reader.readAsDataURL(file);
+            } else {
+                alert('Unsupported file type, please choose an image file');
+            }
+        }
+    }
+
+    function validateFileType(type) {
+        return type.split('/')[0] === 'image';
+    }
+
+    function download() {
+        if (file) {
+            const blob = new Blob([file], { type: `${file.type}` });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+
+            execute(a, url);
+        } else {
+            alert(`You don't have a file to download`);
+        }
+    }
+
+    function execute(a, url) {
+        document.body.appendChild(a);
+        a.setAttribute('style', 'display: none');
+        a.href = url;
+        a.download = file.name;
+        a.click();
+        window.URL.revokeObjectURL(url);
+        a.remove();
+    }
+</script>
+
+</html>
